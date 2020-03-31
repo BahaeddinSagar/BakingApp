@@ -1,17 +1,13 @@
 package ly.bsagar.bakingapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;

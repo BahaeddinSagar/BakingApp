@@ -13,7 +13,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import ly.bsagar.bakingapp.POJO.Ingredient;
 import ly.bsagar.bakingapp.POJO.Recipie;
 import ly.bsagar.bakingapp.R;
 

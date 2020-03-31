@@ -15,4 +15,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="step_details">Step Details:</string>
+    <string name="the_recipie_consists_of">The recipie consists of:</string>
+    <string name="preperation_steps">Preperation Steps:</string>
+    <string name="appwidget_text">Baking</string>
+    <string name="add_widget">Add widget</string>
 </resources>

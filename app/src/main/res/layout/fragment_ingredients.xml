@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.FirstFragment">
+    tools:context=".Fragments.IngredientsFragment">
     <TextView
         android:id="@+id/ingredient_contains"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="The recipie contains of: "
+        android:text="@string/the_recipie_consists_of"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
