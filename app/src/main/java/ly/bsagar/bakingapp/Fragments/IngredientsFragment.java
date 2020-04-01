@@ -44,6 +44,7 @@ public class IngredientsFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
+
         // in case of tablet, hide the showSteps button since steps are already displayed
         if(getResources().getBoolean(R.bool.isTablet)){
             binding.fab.setVisibility(View.GONE);
@@ -60,9 +61,10 @@ public class IngredientsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         model = new ViewModelProvider(getActivity()).get(BakingViewModel.class);
+        binding.ingredientContains.setText(model.getRecipieName()+" "+getString(R.string.consists_of));
         int recipieID = Integer.parseInt(model.getRecipieID());
         try {
-            ingredients = JsonUtili.ParseIngredient(new JSONArray(JsonUtili.JSONDATA).getJSONObject(recipieID).getJSONArray("ingredients"));
+            ingredients = JsonUtili.ParseIngredient(JsonUtili.jsonArray.getJSONObject(recipieID).getJSONArray("ingredients"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

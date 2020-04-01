@@ -9,7 +9,6 @@
         android:id="@+id/ingredient_contains"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/the_recipie_consists_of"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"

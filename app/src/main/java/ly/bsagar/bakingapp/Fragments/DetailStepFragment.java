@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,6 @@ import com.google.android.exoplayer2.util.Util;
 import ly.bsagar.bakingapp.BakingViewModel;
 import ly.bsagar.bakingapp.databinding.FragmentDetailStepBinding;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
-
 
 public class DetailStepFragment extends Fragment {
     FragmentDetailStepBinding binding ;
@@ -34,6 +31,8 @@ public class DetailStepFragment extends Fragment {
     SimpleExoPlayer player;
     int mResumeWindow = -1;
     long mResumePosition = -1;
+    private long playbackPosition;
+    private int currentWindow;
 
     public DetailStepFragment() {
     }
@@ -47,18 +46,23 @@ public class DetailStepFragment extends Fragment {
             mResumeWindow = savedInstanceState.getInt("mResumePosition");
             mResumePosition = savedInstanceState.getLong("mResumePosition");
         }
+        model = new ViewModelProvider(getActivity()).get(BakingViewModel.class);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (Util.SDK_INT >= 24 && !model.getStep().getVideoURL().isEmpty() ) {
+            intilizePlayer();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: " + "restart");
-        player = new SimpleExoPlayer.Builder(context).build();
-        model = new ViewModelProvider(getActivity()).get(BakingViewModel.class);
-        binding.playerView.setPlayer(player);
         binding.stepDetail.setText(model.getStep().getShorDescription());
-        Log.d(TAG, "onResume: " + "restart" + model.getStep().getVideoURL());
         if (model.getStep().getVideoURL().isEmpty()){
             if (getActivity().getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE ||
                     getActivity().getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE){
@@ -66,17 +70,25 @@ public class DetailStepFragment extends Fragment {
                 binding.playerView.setVisibility(View.VISIBLE);
             }
         } else {
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                    Util.getUserAgent(context, "bakingapp"));
-            MediaSource videoSource =
-                    new ProgressiveMediaSource.Factory(dataSourceFactory)
-                            .createMediaSource(Uri.parse(model.getStep().getVideoURL()));
-            player.setPlayWhenReady(true);
-            player.prepare(videoSource);
-            if (mResumeWindow != -1) {
-                player.seekTo(mResumeWindow,mResumePosition);
+            if ((Util.SDK_INT < 24 || player == null)) {
+                intilizePlayer();
             }
         }
+    }
+
+    private void intilizePlayer() {
+        player = new SimpleExoPlayer.Builder(context).build();
+        binding.playerView.setPlayer(player);
+        MediaSource mediaSource = buildMediaSource(Uri.parse(model.getStep().getVideoURL()));
+        player.setPlayWhenReady(true);
+        player.seekTo(currentWindow, playbackPosition);
+        player.prepare(mediaSource, false, false);
+    }
+    private MediaSource buildMediaSource(Uri uri) {
+        DataSource.Factory dataSourceFactory =
+                new DefaultDataSourceFactory(getContext(), "bakingapp");
+        return new ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(uri);
     }
 
     @Override
@@ -84,6 +96,27 @@ public class DetailStepFragment extends Fragment {
         super.onPause();
         mResumeWindow = player.getCurrentWindowIndex();
         mResumePosition = Math.max(0, player.getContentPosition());
+        if (Util.SDK_INT < 24) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT >= 24) {
+            releasePlayer();
+        }
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            player.release();
+            player = null;
+        }
     }
 
     @Override
@@ -91,11 +124,5 @@ public class DetailStepFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putInt("mResumeWindow",mResumeWindow);
         outState.putLong("mResumePosition",mResumePosition);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        player.release();
     }
 }

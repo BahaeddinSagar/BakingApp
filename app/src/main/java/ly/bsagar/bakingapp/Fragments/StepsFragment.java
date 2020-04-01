@@ -41,7 +41,7 @@ public class StepsFragment extends Fragment implements StepsAdapter.StepAdapterC
         model = new ViewModelProvider(getActivity()).get(BakingViewModel.class);
         int recipieID = Integer.parseInt(model.getRecipieID());
         try {
-            steps = JsonUtili.ParseSteps(new JSONArray(JsonUtili.JSONDATA).getJSONObject(recipieID).getJSONArray("steps"));
+            steps = JsonUtili.ParseSteps(JsonUtili.jsonArray.getJSONObject(recipieID).getJSONArray("steps"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
